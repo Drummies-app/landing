@@ -49,46 +49,37 @@ to English.
 Keep the editorial pattern: the stream title asks a question, the Build Log entry
 that follows answers it.
 
-## Connecting the waitlist
+## The waitlist
 
-No provider is wired yet, so the form currently tells visitors it isn't connected.
-To connect one:
+Submissions go to **Kit**, through its public form endpoint. Configured in CI by
+three repository **variables** (Settings → Secrets and variables → Actions →
+Variables) — none is a secret, and none may ever be one:
+
+| Variable | Value |
+| --- | --- |
+| `WAITLIST_ENDPOINT` | `https://app.kit.com/forms/<form-id>/subscriptions` |
+| `WAITLIST_FIELD` | `email_address` |
+| `WAITLIST_FORMAT` | `json` |
+
+**Kit answers 200 even when it rejects a signup**, reporting the real outcome in
+the body as `{"status":"failed","errors":{…}}`. The adapter therefore reads the
+body and does not trust the status code alone — otherwise a visitor whose signup
+was rejected would be told they had joined. Any provider that behaves this way is
+handled the same way.
+
+Switching provider is a variable change, not a code change. Buttondown and
+Formspree take JSON with the field `email`; a hosted form endpoint that wants
+form-encoded data takes `WAITLIST_FORMAT=form`.
+
+**Never use a provider's key-bearing REST API from this site.** Anything reaching
+the browser is public, so only endpoints that need no credential are usable.
+
+To run against the real provider locally:
 
 ```bash
 cp .env.example .env
-# VITE_WAITLIST_ENDPOINT=https://buttondown.com/api/emails/embed-subscribe/<user>
+# fill in VITE_WAITLIST_ENDPOINT, VITE_WAITLIST_FIELD, VITE_WAITLIST_FORMAT
 ```
-
-In CI the same value comes from the `WAITLIST_ENDPOINT` repository **variable**
-(not a secret — it is compiled into the public bundle).
-
-The endpoint must be a **public** form/subscribe URL that accepts a browser POST.
-Never put a provider API key in this repo or in any `VITE_` variable — everything
-prefixed `VITE_` is compiled into the browser bundle and is public. Subscriber
-emails must never land in the repository, Issues, or Actions artifacts.
-
-## Deployment
-
-`main` deploys to GitHub Pages at **https://drummies.app** via
-`.github/workflows/deploy.yml`. Pull requests run the same checks without
-deploying (`.github/workflows/ci.yml`).
-
-Both workflows derive the base path rather than hard-coding it: `public/CNAME`
-means a custom domain and a `/` base; without it the build targets `/<repo>/` for
-a project Pages site. Remove the CNAME and the build follows, with no workflow
-edit.
-
-`public/404.html` handles SPA deep links, so `/build-log` survives a cold load.
-
-One-time setup on GitHub:
-
-1. Make the repository public (spec §0, and Pages needs it on a free plan).
-2. Settings → Pages → Source: **GitHub Actions**.
-3. Settings → Pages → Custom domain: `drummies.app`, then enable **Enforce HTTPS**.
-4. DNS: `A` records for `drummies.app` to GitHub's four Pages addresses
-   (`185.199.108–111.153`), or `ALIAS`/`ANAME` to `drummies-app.github.io`.
-5. Optional: Settings → Secrets and variables → Actions → Variables →
-   `WAITLIST_ENDPOINT`, to connect the waitlist at build time.
 
 ## Stream presence
 

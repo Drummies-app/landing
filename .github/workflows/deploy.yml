@@ -52,6 +52,8 @@ jobs:
           # Public subscribe URL, set as a repository variable. It is compiled
           # into the bundle and is public by design — never use a secret here.
           VITE_WAITLIST_ENDPOINT: ${{ vars.WAITLIST_ENDPOINT }}
+          VITE_WAITLIST_FIELD: ${{ vars.WAITLIST_FIELD }}
+          VITE_WAITLIST_FORMAT: ${{ vars.WAITLIST_FORMAT }}
 
       - uses: actions/configure-pages@v5
 

@@ -3,8 +3,15 @@ import { isValidEmail, joinWaitlist } from '../src/lib/waitlist'
 
 const ENDPOINT = 'https://sibforms.com/serve/test-form'
 
-function mockFetch(status = 200) {
-  const spy = vi.fn().mockResolvedValue({ ok: status >= 200 && status < 300, status })
+function mockFetch(status = 200, payload: unknown = null) {
+  const spy = vi.fn().mockResolvedValue({
+    ok: status >= 200 && status < 300,
+    status,
+    json: async () => {
+      if (payload === null) throw new Error('not json')
+      return payload
+    },
+  })
   vi.stubGlobal('fetch', spy)
   return spy
 }
@@ -55,7 +62,13 @@ describe('joinWaitlist', () => {
 
     const [, init] = spy.mock.calls[0]!
     expect(init.headers['Content-Type']).toBe('application/x-www-form-urlencoded')
-    expect(init.body.toString()).toBe('EMAIL=someone%40example.com')
+
+    const sent = new URLSearchParams(init.body.toString())
+    expect(sent.get('EMAIL')).toBe('someone@example.com')
+    // The honeypot must be present and empty; filling it marks the submission
+    // as a bot and the provider drops it.
+    expect(sent.get('email_address_check')).toBe('')
+    expect(sent.get('locale')).toBe('en')
   })
 
   it('treats an address already on the list as success', async () => {
@@ -78,5 +91,28 @@ describe('joinWaitlist', () => {
     vi.stubEnv('VITE_WAITLIST_ENDPOINT', ENDPOINT)
     await joinWaitlist('  someone@example.com  ')
     expect(JSON.parse(spy.mock.calls[0]![1].body)).toEqual({ email: 'someone@example.com' })
+  })
+
+  it('treats a 200 that reports failure in the body as a failure', async () => {
+    // Kit answers 200 with a failed status rather than an error code.
+    mockFetch(200, { status: 'failed', errors: { messages: ["Form couldn't be found"] } })
+    vi.stubEnv('VITE_WAITLIST_ENDPOINT', ENDPOINT)
+    expect(await joinWaitlist('someone@example.com')).toEqual({ kind: 'failed' })
+  })
+
+  it('accepts a 200 whose body reports success or carries no errors', async () => {
+    mockFetch(200, { status: 'success', subscription: { id: 1 } })
+    vi.stubEnv('VITE_WAITLIST_ENDPOINT', ENDPOINT)
+    expect(await joinWaitlist('someone@example.com')).toEqual({ kind: 'ok' })
+
+    mockFetch(200, { status: 'success', errors: {} })
+    expect(await joinWaitlist('someone@example.com')).toEqual({ kind: 'ok' })
+  })
+
+  it('does not treat an unreadable body as a failure', async () => {
+    // A redirect page or an empty 200 is not evidence the signup was rejected.
+    mockFetch(200, null)
+    vi.stubEnv('VITE_WAITLIST_ENDPOINT', ENDPOINT)
+    expect(await joinWaitlist('someone@example.com')).toEqual({ kind: 'ok' })
   })
 })
