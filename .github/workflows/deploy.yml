@@ -1,0 +1,70 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time, and never cancel one midway: a half-finished deploy
+# would leave the published site inconsistent.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      - run: npm run test
+
+      # A custom domain serves from the root; a project page serves from
+      # /<repo>/. Deriving it here means the domain can be added or removed
+      # without editing this workflow.
+      - id: base
+        run: |
+          if [ -f public/CNAME ]; then
+            echo "value=/" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=/${GITHUB_REPOSITORY#*/}/" >> "$GITHUB_OUTPUT"
+          fi
+
+      - run: npm run build
+        env:
+          VITE_BASE: ${{ steps.base.outputs.value }}
+          # Public subscribe URL, set as a repository variable. It is compiled
+          # into the bundle and is public by design — never use a secret here.
+          VITE_WAITLIST_ENDPOINT: ${{ vars.WAITLIST_ENDPOINT }}
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

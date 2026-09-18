@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run lint
+
+      - run: npm run typecheck
+
+      - run: npm run test
+
+      # Build with the same base the deploy uses, so a broken base path fails
+      # the pull request rather than production.
+      - id: base
+        run: |
+          if [ -f public/CNAME ]; then
+            echo "value=/" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=/${GITHUB_REPOSITORY#*/}/" >> "$GITHUB_OUTPUT"
+          fi
+
+      - run: npm run build
+        env:
+          VITE_BASE: ${{ steps.base.outputs.value }}
+          VITE_WAITLIST_ENDPOINT: ${{ vars.WAITLIST_ENDPOINT }}

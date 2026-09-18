@@ -59,19 +59,36 @@ cp .env.example .env
 # VITE_WAITLIST_ENDPOINT=https://buttondown.com/api/emails/embed-subscribe/<user>
 ```
 
+In CI the same value comes from the `WAITLIST_ENDPOINT` repository **variable**
+(not a secret — it is compiled into the public bundle).
+
 The endpoint must be a **public** form/subscribe URL that accepts a browser POST.
 Never put a provider API key in this repo or in any `VITE_` variable — everything
 prefixed `VITE_` is compiled into the browser bundle and is public. Subscriber
 emails must never land in the repository, Issues, or Actions artifacts.
 
-## Going live (not yet configured)
+## Deployment
 
-Deployment is deliberately not wired up in this build. When you add it:
+`main` deploys to GitHub Pages at **https://drummies.app** via
+`.github/workflows/deploy.yml`. Pull requests run the same checks without
+deploying (`.github/workflows/ci.yml`).
 
-- Set `VITE_BASE=/` for a custom domain or user/org Pages site, or `/<repo>/` for
-  a project Pages site.
-- `public/404.html` already handles SPA deep links on GitHub Pages.
-- PR checks should run `npm run check`.
+Both workflows derive the base path rather than hard-coding it: `public/CNAME`
+means a custom domain and a `/` base; without it the build targets `/<repo>/` for
+a project Pages site. Remove the CNAME and the build follows, with no workflow
+edit.
+
+`public/404.html` handles SPA deep links, so `/build-log` survives a cold load.
+
+One-time setup on GitHub:
+
+1. Make the repository public (spec §0, and Pages needs it on a free plan).
+2. Settings → Pages → Source: **GitHub Actions**.
+3. Settings → Pages → Custom domain: `drummies.app`, then enable **Enforce HTTPS**.
+4. DNS: `A` records for `drummies.app` to GitHub's four Pages addresses
+   (`185.199.108–111.153`), or `ALIAS`/`ANAME` to `drummies-app.github.io`.
+5. Optional: Settings → Secrets and variables → Actions → Variables →
+   `WAITLIST_ENDPOINT`, to connect the waitlist at build time.
 
 ## Deliberately not built yet
 
