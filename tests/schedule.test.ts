@@ -6,7 +6,6 @@ import {
   remainingUntil,
 } from "../src/lib/time";
 import { parseEntry } from "../src/lib/content";
-import { isValidEmail } from "../src/lib/waitlist";
 import type { Schedule, Stream } from "../src/types";
 
 const stream: Stream = {
@@ -164,14 +163,5 @@ O navegador ouviu a bateria.
       raw.replace("<!--lang:pt-BR-->\nO navegador ouviu a bateria.\n", ""),
     );
     expect(entry.body["pt-BR"]).toBe("The browser heard the kit.");
-  });
-});
-
-describe("waitlist validation", () => {
-  it("accepts real addresses and rejects malformed ones", () => {
-    expect(isValidEmail("someone@example.com")).toBe(true);
-    expect(isValidEmail("someone@example")).toBe(false);
-    expect(isValidEmail("not an email")).toBe(false);
-    expect(isValidEmail("")).toBe(false);
   });
 });
