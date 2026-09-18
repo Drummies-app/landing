@@ -8,4 +8,4 @@ dist
 .impeccable/config.local.json
 .impeccable/questions/
 tsconfig.tsbuildinfo
-content/build-log
+.content/

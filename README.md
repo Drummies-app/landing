@@ -100,15 +100,17 @@ These are specified in v0.4 but out of scope here, and nothing fakes them:
 - The AI editorial workflows (§26) for title and Build Log draft generation.
 - CI/CD and the Pages deploy workflow.
 
-## Build Log content is intentionally untracked
+## Publishing a Build Log entry
 
-`content/build-log/` is listed in `.gitignore`: the entries are drafted locally
-and published later, so nothing half-written ends up in public history. The site
-handles this — with no entries the Build Log renders its empty state and the
-build succeeds, which is what a fresh clone and CI will produce.
+Entries live in `content/build-log/` and ship with the site. Draft locally, then
+commit the entry in the PR that publishes it.
 
-When you're ready to publish, drop `content/build-log` from `.gitignore` and
-commit the entries in the same PR.
+A post written *before* its session has no `stream:` field — that key links an
+entry to a session that already happened, and the page renders "From experiment"
+from it. Add it only once the stream has actually run.
+
+With no entries at all the Build Log renders its empty state and the build still
+succeeds, which is what a fresh clone produces.
 
 ## Content to replace before launch
 
