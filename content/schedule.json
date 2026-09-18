@@ -4,47 +4,11 @@
   "streams": [
     {
       "id": "build-001",
-      "startsAt": "2026-09-05T20:00:00-03:00",
-      "endsAt": "2026-09-05T23:00:00-03:00",
-      "title": {
-        "en": "I Bought a Drum Kit. Now What?",
-        "pt-BR": "Comprei uma bateria. E agora?"
-      },
-      "twitchUrl": "https://www.twitch.tv/saadeguilherme",
-      "youtubeUrl": "https://www.youtube.com/@saadeguilherme",
-      "recordingUrl": null
-    },
-    {
-      "id": "build-002",
-      "startsAt": "2026-09-12T20:00:00-03:00",
-      "endsAt": "2026-09-12T23:00:00-03:00",
-      "title": {
-        "en": "Why Won't My Hands and Feet Cooperate?",
-        "pt-BR": "Por que minhas mãos e meus pés não se entendem?"
-      },
-      "twitchUrl": "https://www.twitch.tv/saadeguilherme",
-      "youtubeUrl": "https://www.youtube.com/@saadeguilherme",
-      "recordingUrl": null
-    },
-    {
-      "id": "build-003",
-      "startsAt": "2026-09-19T20:00:00-03:00",
-      "endsAt": "2026-09-19T23:00:00-03:00",
+      "startsAt": "2026-09-21T19:00:00-03:00",
+      "endsAt": "2026-09-21T22:00:00-03:00",
       "title": {
         "en": "Can a Browser Talk to a Drum Kit?",
         "pt-BR": "Será que o navegador consegue falar com uma bateria?"
-      },
-      "twitchUrl": "https://www.twitch.tv/saadeguilherme",
-      "youtubeUrl": "https://www.youtube.com/@saadeguilherme",
-      "recordingUrl": null
-    },
-    {
-      "id": "build-004",
-      "startsAt": "2026-09-26T20:00:00-03:00",
-      "endsAt": "2026-09-26T23:00:00-03:00",
-      "title": {
-        "en": "Is It Me, or Is the Browser Late?",
-        "pt-BR": "Sou eu ou o navegador está atrasado?"
       },
       "twitchUrl": "https://www.twitch.tv/saadeguilherme",
       "youtubeUrl": "https://www.youtube.com/@saadeguilherme",
