@@ -1,5 +1,4 @@
 {
-  "$comment": "Normalized stream presence (spec §25.3). Written by a scheduled GitHub Action in a later phase; until that exists this file reports the honest default. Never edit it to claim a live stream that is not running.",
   "checkedAt": null,
   "live": false,
   "primary": null,

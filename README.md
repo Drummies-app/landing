@@ -90,15 +90,50 @@ One-time setup on GitHub:
 5. Optional: Settings → Secrets and variables → Actions → Variables →
    `WAITLIST_ENDPOINT`, to connect the waitlist at build time.
 
+## Stream presence
+
+`scripts/presence.mjs` decides whether the site may say you are live.
+`.github/workflows/presence.yml` runs it every five minutes.
+
+It reads `content/schedule.json` and does nothing unless a session is actually
+expected — from 20 minutes before the planned start until 90 minutes after the
+planned end. Inside that window it asks Twitch (and YouTube, if configured),
+writes the normalized `public/live.json`, and publishes only when the answer
+changed. A start time that has passed never means cancelled.
+
+Required secrets (Settings → Secrets and variables → Actions):
+
+| Secret | Needed for |
+| --- | --- |
+| `TWITCH_CLIENT_ID` | Twitch status. Create an app at dev.twitch.tv/console/apps |
+| `TWITCH_CLIENT_SECRET` | Twitch status |
+| `YOUTUBE_API_KEY` | Optional. The channel id is already set in `content/platforms.json` |
+
+Without credentials the worker still runs and reports offline, so the site is
+correct — just never live. Credentials stay in Actions and never reach the
+browser.
+
+Preview what it would write, without touching anything:
+
+```bash
+node scripts/presence.mjs --dry-run
+```
+
+Three things worth knowing:
+
+- GitHub's cron is best-effort and can run several minutes late, so "live"
+  appears within a few minutes rather than instantly.
+- A failed API lookup leaves the last published status alone rather than
+  flapping the site offline.
+- YouTube's `search.list` costs 100 quota units per call against a 10,000/day
+  default. One five-hour window is roughly 58 calls (~5,800 units), so a single
+  session a day fits and two do not. Twitch has no comparable limit — if you
+  only care about one platform, leave `YOUTUBE_API_KEY` unset and the worker
+  skips YouTube entirely.
+
 ## Deliberately not built yet
 
-These are specified in v0.4 but out of scope here, and nothing fakes them:
-
-- The scheduled GitHub Action that verifies real Twitch/YouTube live status and
-  writes `live.json`. The site already consumes the normalized shape, so wiring
-  the worker requires no UI change.
 - The AI editorial workflows (§26) for title and Build Log draft generation.
-- CI/CD and the Pages deploy workflow.
 
 ## Publishing a Build Log entry
 

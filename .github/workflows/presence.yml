@@ -1,0 +1,80 @@
+name: Stream presence
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.presence.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - id: presence
+        run: node scripts/presence.mjs
+        env:
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+
+      - if: steps.presence.outputs.changed == 'true'
+        run: |
+          git config user.name "drummies-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/live.json
+          git commit -m "chore: update stream presence"
+          git push
+
+      - if: steps.presence.outputs.changed == 'true'
+        run: npm ci
+
+      - if: steps.presence.outputs.changed == 'true'
+        id: base
+        run: |
+          if [ -f public/CNAME ]; then
+            echo "value=/" >> "$GITHUB_OUTPUT"
+          else
+            echo "value=/${GITHUB_REPOSITORY#*/}/" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.presence.outputs.changed == 'true'
+        run: npm run build
+        env:
+          VITE_BASE: ${{ steps.base.outputs.value }}
+          VITE_WAITLIST_ENDPOINT: ${{ vars.WAITLIST_ENDPOINT }}
+
+      - if: steps.presence.outputs.changed == 'true'
+        uses: actions/configure-pages@v5
+
+      - if: steps.presence.outputs.changed == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  publish:
+    needs: check
+    if: needs.check.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

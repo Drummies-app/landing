@@ -1,0 +1,5 @@
+{
+  "$comment": "Where Drummies streams. Read by the site for links and by the presence worker for status checks, so each handle is declared once. youtubeChannelId is the UC… id resolved from the @handle — the YouTube API does not accept handles.",
+  "twitchLogin": "saadeguilherme",
+  "youtubeChannelId": "UCqJW6ToK66icnv96jKB03cw"
+}
