@@ -1,0 +1,78 @@
+{
+  "$comment": "The secretive public roadmap (spec §13). It communicates ambition without exposing the blueprint. Never add mechanics here. \"icons\" name drawn glyphs in src/components/Icon.tsx; \"glyph\" is literal text for phases with no instrument.",
+  "question": {
+    "ask": {
+      "en": "What are we building?",
+      "pt-BR": "O que estamos construindo?"
+    },
+    "answer": {
+      "en": "A better way to learn music.",
+      "pt-BR": "Um jeito melhor de aprender música."
+    },
+    "how": {
+      "en": "How?",
+      "pt-BR": "Como?"
+    },
+    "deflection": {
+      "en": "Nice try. 👀",
+      "pt-BR": "Boa tentativa. 👀"
+    }
+  },
+  "phases": [
+    {
+      "id": "now",
+      "label": {
+        "en": "Now",
+        "pt-BR": "Agora"
+      },
+      "items": [
+        {
+          "en": "Drums.",
+          "pt-BR": "Bateria."
+        }
+      ],
+      "note": {
+        "en": "That's all we're saying.",
+        "pt-BR": "É só isso que a gente vai contar."
+      },
+      "icons": ["drum"]
+    },
+    {
+      "id": "later",
+      "label": {
+        "en": "Later",
+        "pt-BR": "Depois"
+      },
+      "items": [
+        {
+          "en": "Guitar? Piano? Voice?",
+          "pt-BR": "Guitarra? Piano? Voz?"
+        }
+      ],
+      "note": {
+        "en": "Maybe.",
+        "pt-BR": "Talvez."
+      },
+      "icons": ["guitar", "piano", "mic"]
+    },
+    {
+      "id": "after",
+      "label": {
+        "en": "After that",
+        "pt-BR": "Depois disso"
+      },
+      "items": [
+        {
+          "en": "Who knows.",
+          "pt-BR": "Quem sabe."
+        }
+      ],
+      "note": {
+        "en": "Let's learn the first beat first.",
+        "pt-BR": "Vamos aprender a primeira batida primeiro."
+      },
+      "icons": [],
+      "glyph": "¯\\_(ツ)_/¯"
+    }
+  ]
+}

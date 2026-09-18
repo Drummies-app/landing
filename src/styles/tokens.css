@@ -1,0 +1,40 @@
+:root {
+  /* Ground is warm, not neutral: the accent is coral and a cold black fights it.
+     Dark comes from the use scene — a beginner at a kit in the evening, and a
+     livestream page that sits beside a dark player. */
+  --ink: #151312;
+  --ink-lift: #1c1a18;
+  --ink-raise: #242020;
+  --line: #2e2a27;
+  --line-soft: #221f1c;
+
+  --cream: #f2ede4;
+  --cream-dim: #b3aba0;
+  --cream-faint: #948c83;
+
+  --coral: #ff6a4d;
+  --coral-soft: #ff8e77;
+  --coral-deep: #d14a2e;
+  --on-coral: #1f0b05;
+  --on-coral-dim: #4a1a0c;
+
+  --amber: #e8a33d;
+  --amber-ink: #2a1d08;
+
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-pill: 999px;
+
+  --gutter: clamp(20px, 5vw, 64px);
+  --max: 1280px;
+
+  --step-0: 1rem;
+  --step-1: 1.125rem;
+  --step-2: clamp(1.25rem, 1.6vw, 1.5rem);
+  --step-3: clamp(1.75rem, 2.6vw, 2.5rem);
+  --step-4: clamp(2.5rem, 5vw, 4rem);
+  --step-5: clamp(3rem, 7.5vw, 6rem);
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur: 520ms;
+}

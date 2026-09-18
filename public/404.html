@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Drummies</title>
+    <meta name="robots" content="noindex" />
+    <script>
+      // GitHub Pages serves this file for any path it has no file for. The site
+      // has real routes (/build-log), so hand the path to the app instead of
+      // showing a 404. On <user>.github.io/<repo>/ the first segment is the base.
+      (function () {
+        var path = location.pathname;
+        var base = "/";
+        if (/\.github\.io$/.test(location.hostname)) {
+          var first = path.split("/")[1];
+          if (first) base = "/" + first + "/";
+        }
+        try {
+          sessionStorage.setItem(
+            "drummies.redirect",
+            path + location.search + location.hash,
+          );
+        } catch (error) {
+          // Blocked storage: the visitor still lands on the front page.
+        }
+        location.replace(location.origin + base);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>
